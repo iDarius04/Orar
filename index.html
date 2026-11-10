@@ -54,6 +54,7 @@ h1{font-size:24px;font-weight:700;letter-spacing:-.02em;margin:0;padding:18px 16
 .nav{margin:0 0 8px;gap:6px;flex-wrap:nowrap}
 .nav button,.nav select{border-radius:12px;min-height:42px}
 .nav button{padding:0 16px}
+.nav #mcToggle{padding:0 10px;white-space:nowrap}
 .nav select{flex:1;min-width:0;font-size:16px;font-weight:600;text-align:center;text-align-last:center}
 #td{color:var(--acc);font-weight:600}
 button:disabled{opacity:.35}
@@ -142,11 +143,43 @@ button:disabled{opacity:.35}
 #sh select,#sh input{width:100%;box-sizing:border-box;min-height:44px;border-radius:12px;font-size:16px}
 #sh .pri{background:var(--acc);border-color:var(--acc);color:var(--onacc);font-weight:600}
 #sh .dng{color:var(--bad)}
+/* Calendar lunar */
+#mc[hidden]{display:none}
+#mc{margin:12px 0;background:var(--card);border:1px solid var(--ln);border-radius:16px;padding:12px}
+.mc-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
+.mc-head strong{font-size:16px;text-transform:capitalize}
+.mc-head button{min-width:42px;min-height:38px}
+.mc-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}
+.mc-weekday{text-align:center;color:var(--mut);font-size:11px;font-weight:650;padding:3px 0}
+.mc-day{min-width:0;min-height:68px;padding:6px 5px;border:1px solid var(--ln);border-radius:9px;background:var(--bg);color:var(--fg);display:flex;flex-direction:column;align-items:flex-start;gap:5px;text-align:left}
+.mc-day.outside{opacity:.45}
+.mc-day.out-range{opacity:.28;cursor:default}
+.mc-day.has-work{background:color-mix(in srgb,#3478d4 13%,var(--card));border-color:color-mix(in srgb,#3478d4 45%,var(--ln))}
+.mc-day.has-exam{background:color-mix(in srgb,var(--bad) 13%,var(--card));border-color:color-mix(in srgb,var(--bad) 55%,var(--ln))}
+.mc-day.has-work.has-exam{background:linear-gradient(135deg,color-mix(in srgb,#3478d4 16%,var(--card)) 0 50%,color-mix(in srgb,var(--bad) 16%,var(--card)) 50% 100%);border-color:color-mix(in srgb,var(--bad) 48%,#3478d4)}
+.mc-day.selected{box-shadow:inset 0 0 0 2px var(--acc)}
+.mc-num{font-weight:700;font-variant-numeric:tabular-nums;font-size:13px;line-height:1.1}
+.mc-tags{display:flex;flex-wrap:wrap;gap:3px;min-width:0}
+.mc-tag{display:inline-block;border-radius:4px;padding:1px 4px;font-size:9px;line-height:1.3;font-weight:700;white-space:nowrap}
+.mc-work{background:#3478d4;color:#fff}
+.mc-exam{background:var(--bad);color:#fff}
+.mc-legend{display:flex;flex-wrap:wrap;gap:8px 14px;margin-top:10px;color:var(--mut);font-size:11px}
+.mc-legend span{display:inline-flex;align-items:center;gap:5px}
+.mc-legend i{display:inline-block;width:9px;height:9px;border-radius:3px}
+.mc-legend .work-key{background:#3478d4}.mc-legend .exam-key{background:var(--bad)}
+#ck{min-height:38px}
+@media(max-width:720px){
+ #mc{margin:10px 12px 0;padding:10px;border:0;border-radius:18px;box-shadow:0 1px 2px rgba(20,24,40,.06),0 10px 28px -14px rgba(20,24,40,.25)}
+ .mc-grid{gap:3px}.mc-day{min-height:57px;padding:5px 3px;border-radius:8px;gap:4px}
+ .mc-num{font-size:12px}.mc-tags{flex-direction:column;gap:2px}.mc-tag{font-size:8px;padding:1px 3px;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+ .mc-head{margin-bottom:8px}.mc-head strong{font-size:15px}.mc-head button{min-height:36px;min-width:38px;padding:4px 10px}
+ #ckWrap{grid-column:1/-1}
+}
 @media(min-width:721px){#sh{align-items:center}#sh .sc{border-radius:20px}}
 </style></head><body><div id="lg"><form id="lf"><h2>Orarul meu</h2><input id="lu" type="email" placeholder="Email" autocomplete="username" autocapitalize="none"><input id="lp" type="password" placeholder="Parolă (min. 6 caractere)" autocomplete="current-password"><div class="cf" id="le"></div><button type="submit" id="lb" class="act">Autentificare</button><button type="button" id="rb">Creează cont</button><button type="button" id="sk">Continuă fără cont (doar pe acest dispozitiv)</button></form></div><div class="w">
 <h1>Planificator orar pe săptămâni</h1>
 <p class="sub">Grupa 1022/2 ↔ 1022/1 · semestrul I, 28.09.2026 – 21.02.2027. Alege săptămâna, apoi alege dacă o modificare (schimb de laborator sau program personal) se aplică doar în ea sau în fiecare săptămână.</p>
-<div id="top"><div class="bar nav"><button id="pv">←</button><select id="ws"></select><button id="nx">→</button><button id="td">Azi</button></div><div id="dt"></div></div><div class="bar meta"><span class="st" id="pr"></span><span class="st" id="sy"></span><span class="st" id="us"></span><button id="lo">Deconectare</button></div>
+<div id="top"><div class="bar nav"><button id="pv">←</button><select id="ws"></select><button id="nx">→</button><button id="td">Azi</button><button id="mcToggle" aria-expanded="false">Lună</button></div><div id="dt"></div></div><section id="mc" hidden aria-label="Calendar lunar"><div class="mc-head"><button id="mcPrev" aria-label="Luna anterioară">←</button><strong id="mcTitle"></strong><button id="mcNext" aria-label="Luna următoare">→</button></div><div class="mc-grid" id="mcGrid"></div><div class="mc-legend"><span><i class="work-key"></i>Tură de muncă</span><span><i class="exam-key"></i>Examen</span></div></section><div class="bar meta"><span class="st" id="pr"></span><span class="st" id="sy"></span><span class="st" id="us"></span><button id="lo">Deconectare</button></div>
 <div class="bar scope"><b><span class="dk">Modificările se aplică:</span><span class="mo">Se aplică:</span></b><button id="s1"><span class="dk">Doar săptămâna aceasta</span><span class="mo">Doar săpt. aceasta</span></button><button id="s2"><span class="dk">În fiecare săptămână</span><span class="mo">În fiecare săpt.</span></button></div>
 <div class="bar tools"><div class="lg"><i class="t-Curs">Curs</i><i class="t-Seminar">Seminar</i><i class="t-Laborator">Laborator</i><i class="t-Personal">Personal</i><i class="t-Vac">Vacanță</i><i class="t-Ses">Sesiune</i><i class="t-Rest">Restanțe</i></div><label><input type="checkbox" id="tc"> Arată cursurile</label><span class="st" id="st"></span></div>
 
@@ -155,7 +188,7 @@ button:disabled{opacity:.35}
 <h2>Laboratoarele și engleza ta (apasă ca să alegi)</h2><div id="P"></div><div class="bar"><button id="rs">Resetează laboratoarele</button></div>
 <h2 id="ft">Programul meu (muncă etc.)</h2>
 <div class="bar shf"><span class="st">Ture frecvente (alege zilele, apoi tura):</span><button data-sh="15:30-22:00">15:30–22:00</button><button data-sh="09:00-18:00">09:00–18:00</button><button data-sh="09:00-15:30">09:00–15:30</button><button data-sh="13:00-22:00">13:00–22:00</button></div>
-<div class="frm"><input id="cn" value="Muncă" size="12" aria-label="Nume"><span id="cd" style="display:flex;gap:4px;flex-wrap:wrap"></span><label>De la <input type="time" id="cs" value="10:00"></label><label>Până la <input type="time" id="ce" value="18:00"></label><select id="cw" title="Doar pentru programul recurent"><option value="0">Toate săptămânile (S1+S2)</option><option value="1">Doar S1</option><option value="2">Doar S2</option></select><button id="ca">Adaugă</button><button id="cdl" hidden>Șterge</button><button id="cx" hidden>Anulează</button><span class="cf" id="cm"></span></div>
+<div class="frm"><input id="cn" value="Muncă" size="12" aria-label="Nume"><label id="ckWrap">Tipul activității <select id="ck"><option value="work">Tură de muncă</option><option value="personal">Activitate personală</option></select></label><span id="cd" style="display:flex;gap:4px;flex-wrap:wrap"></span><label>De la <input type="time" id="cs" value="10:00"></label><label>Până la <input type="time" id="ce" value="18:00"></label><select id="cw" title="Doar pentru programul recurent"><option value="0">Toate săptămânile (S1+S2)</option><option value="1">Doar S1</option><option value="2">Doar S2</option></select><button id="ca">Adaugă</button><button id="cdl" hidden>Șterge</button><button id="cx" hidden>Anulează</button><span class="cf" id="cm"></span></div>
 <div class="st" id="sc" style="margin-top:6px"></div><div id="PL" style="margin-top:8px"></div>
 <h2>Date: export și import</h2>
 <div class="bar"><button id="ex">Exportă datele (.json)</button><label class="btn">Importă din fișier<input type="file" id="im" accept=".json,application/json" hidden></label><span class="st" id="xm"></span></div>
@@ -187,8 +220,8 @@ const TW=(()=>{let n=0;return[...Array(NW)].map((_,w)=>wtype(w)=='did'?++n:0)})(
 const wkOld=i=>iso(new Date(OLDB0+i*7*DAY));
 function migrate(o){if(!o||typeof o!='object')return o;if(!(o.v>=3)){const wp={};for(const w in o.wp||{})wp[/^\d+$/.test(w)?wkOld(+w):w]=o.wp[w];o.wp=wp;
 (o.ser||[]).forEach(q=>{const ex={};for(const w in q.ex||{})ex[/^\d+$/.test(w)?wkOld(+w):w]=q.ex[w];q.ex=ex});
-(o.one||[]).forEach(q=>{if(typeof q.wk=='number')q.wk=wkOld(q.wk)});o.dx={};o.v=3}if(o.v<4){o.dx=o.dx||{};o.v=4}if(o.v<5){o.exam=o.exam||{};o.v=5}return o}
-let S={v:5,dx:{},exam:{},par0:1,struct:1,showC:1,base:{},wp:{},ser:[],one:[],scope:'all'},wk=0,sel=null,ed=null;
+(o.one||[]).forEach(q=>{if(typeof q.wk=='number')q.wk=wkOld(q.wk)});o.dx={};o.v=3}if(o.v<4){o.dx=o.dx||{};o.v=4}if(o.v<5){o.exam=o.exam||{};o.v=5}if(o.v<6)o.v=6;return o}
+let S={v:6,dx:{},exam:{},par0:1,struct:1,showC:1,base:{},wp:{},ser:[],one:[],scope:'all'},wk=0,sel=null,ed=null;
 try{const raw=localStorage.getItem('orar-v2'),j=JSON.parse(raw);if(j){if(j.v==3&&!localStorage.getItem('orar-backup-v3'))localStorage.setItem('orar-backup-v3',raw);if(!(j.v>=3)&&!localStorage.getItem('orar-backup-v2'))localStorage.setItem('orar-backup-v2',raw);S=Object.assign(S,migrate(j));if(!j.ts)S.ts=1}}catch(e){}
 for(const c in L)if(S.base[c]==null)S.base[c]=DEF[c]||0;
 let UID=null,SB=null,wt=null,wbusy=false,pt=null;const SY=x=>{$('sy').textContent=' · '+x},SK=['v','dx','exam','par0','struct','showC','base','wp','ser','one','ts'];
@@ -206,17 +239,40 @@ const par=w=>{const f=S.par0==1?0:1;let p=0;for(let i=0;i<=w;i++)p=TW[i]?((TW[i]
 const wlab=w=>{const p=perOf(wkey(w));return p[2]=='did'?'S'+par(w)+' · sem. '+TW[w]:p[3]};
 const off=(w,d)=>{if(!S.struct)return'';const t=wtype(w);if(t!='did')return perOf(wkey(w))[3];const f=FREE[dkey(w,d)];return f?'zi liberă · '+f:''};
 const hm=t=>{const h=Math.floor(t),m=Math.round((t-h)*60);return h+':'+String(m).padStart(2,'0')},esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])),nm=x=>x.nm||C[x.c];
+const guessKind=n=>/(munc|work|tura|shift)/.test(String(n||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase())?'work':'personal',kindOf=x=>x.kind=='work'||x.kind=='personal'?x.kind:guessKind(x.name||x.nm),isWorkShift=x=>kindOf(x)=='work';
 const ovl=(a,b)=>a!==b&&a.d==b.d&&a.s<b.e&&b.s<a.e,clash=(a,b)=>ovl(a,b)&&a.k!='Curs'&&b.k!='Curs';
 function items(w){const p=par(w),a=[];
 F.forEach(f=>{if(!f[4]||f[4]==p)a.push({c:f[0],k:f[1],d:f[2],s:f[3],e:f[3]+2,t:f[5],r:f[6],key:'F:'+f[0]+':'+f[1]+':'+f[2]+':'+f[3]})});
 for(const c in L)L[c].forEach((v,i)=>{if(!v[2]||v[2]==p)a.push({c,k:c=='ENG'?'Seminar':'Laborator',d:v[0],s:v[1],e:v[1]+2,t:v[3],r:v[4],lab:1,i,g:i!=pk(c,w),key:'L:'+c})});
-S.ser.forEach(q=>{if(q.par&&q.par!=p)return;const o=q.ex[wkey(w)];if(o&&o.del)return;const z=o||q;z.days.forEach(d=>a.push({c:'X',k:'Personal',nm:z.name,d,s:z.s,e:z.e,pid:q.id,rec:1,mod:!!o,key:'P:'+q.id}))});
-S.one.forEach(q=>{if(q.wk==wkey(w))q.days.forEach(d=>a.push({c:'X',k:'Personal',nm:q.name,d,s:q.s,e:q.e,pid:q.id,key:'O:'+q.id}))});return exc(a,w)}
+S.ser.forEach(q=>{if(q.par&&q.par!=p)return;const o=q.ex[wkey(w)];if(o&&o.del)return;const z=o||q;z.days.forEach(d=>a.push({c:'X',k:'Personal',nm:z.name,kind:z.kind||q.kind,d,s:z.s,e:z.e,pid:q.id,rec:1,mod:!!o,key:'P:'+q.id}))});
+S.one.forEach(q=>{if(q.wk==wkey(w))q.days.forEach(d=>a.push({c:'X',k:'Personal',nm:q.name,kind:q.kind,d,s:q.s,e:q.e,pid:q.id,key:'O:'+q.id}))});return exc(a,w)}
 function exc(a,w){const r=[];a.forEach(x=>{x.od=dkey(w,x.d);if(x.g){r.push(x);return}const e=S.dx[x.od+'|'+x.key];if(!e){r.push(x);return}x.xc=1;r.push(x);if(e.del)return;x.mvto=1;const d2=Math.round((Date.parse(e.d)-dt(w,0))/DAY);if(d2>=0&&d2<7)r.push(Object.assign({},x,{xc:0,mvto:0,mv:1,d:d2,s:e.s,e:e.e}))});return r}
 function setPick(c,i){if(S.scope=='all'){S.base[c]=i;for(const w in S.wp)delete S.wp[w][c]}else(S.wp[wkey(wk)]=S.wp[wkey(wk)]||{})[c]=i;sel=null;save();render()}
 const mob=matchMedia('(max-width:720px)');const tIdx=()=>{const n=new Date();return Math.floor((Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())-B0)/DAY)};
 let dy=0;const toToday=()=>{const i=tIdx();wk=Math.max(0,Math.min(NW-1,Math.floor(i/7)));dy=i>=0&&i<NW*7?i%7:(new Date().getDay()+6)%7};toToday();let lastD=tIdx();
-let HR=44;function render(){HR=mob.matches?60:44;$('G').style.setProperty('--hr',HR+'px');
+let HR=44;
+const MONTHS=['ianuarie','februarie','martie','aprilie','mai','iunie','iulie','august','septembrie','octombrie','noiembrie','decembrie'];
+const minDate=new Date(B0),maxDate=dt(NW-1,6),MIN_DAY=iso(minDate),MAX_DAY=iso(maxDate),MIN_MONTH=Date.UTC(minDate.getUTCFullYear(),minDate.getUTCMonth(),1),MAX_MONTH=Date.UTC(maxDate.getUTCFullYear(),maxDate.getUTCMonth(),1);
+let calOpen=false,calMonth=(()=>{const i=Math.max(0,Math.min(NW*7-1,tIdx()));const d=new Date(B0+i*DAY);return Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1)})();
+const syncCalMonth=()=>{const d=dt(wk,dy);calMonth=Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),1)};
+function renderMonth(){
+ const box=$('mc');box.hidden=!calOpen;$('mcToggle').classList.toggle('act',calOpen);$('mcToggle').setAttribute('aria-expanded',String(calOpen));
+ if(!calOpen)return;
+ const first=new Date(calMonth),y=first.getUTCFullYear(),m=first.getUTCMonth(),firstDay=new Date(Date.UTC(y,m,1)),offset=(firstDay.getUTCDay()+6)%7,daysInMonth=new Date(Date.UTC(y,m+1,0)).getUTCDate(),rows=Math.ceil((offset+daysInMonth)/7),count=rows*7;
+ $('mcTitle').textContent=MONTHS[m]+' '+y;$('mcPrev').disabled=calMonth<=MIN_MONTH;$('mcNext').disabled=calMonth>=MAX_MONTH;
+ const flags=Object.create(null);
+ for(let w=0;w<NW;w++)items(w).forEach(x=>{if(x.xc||x.g)return;const k=dkey(w,x.d),f=flags[k]||(flags[k]={work:false,exam:false}),hasExam=x.k!='Personal'&&!!S.exam[x.od+'|'+x.key];if(x.k=='Personal'&&isWorkShift(x))f.work=true;if(hasExam)f.exam=true});
+ const weekdays=['Lu','Ma','Mi','Jo','Vi','Sâ','Du'];
+ let html=weekdays.map(d=>'<div class="mc-weekday">'+d+'</div>').join('');
+ for(let i=0;i<count;i++){
+  const day=new Date(Date.UTC(y,m,1+i-offset)),key=iso(day),inMonth=day.getUTCMonth()==m,inRange=key>=MIN_DAY&&key<=MAX_DAY,f=flags[key]||{work:false,exam:false},idx=(Date.parse(key+'T00:00:00Z')-B0)/DAY,selected=inRange&&Math.floor(idx/7)==wk&&idx%7==dy;
+  const classes=['mc-day',inMonth?'':'outside',inRange?'':'out-range',f.work?'has-work':'',f.exam?'has-exam':'',selected?'selected':''].filter(Boolean).join(' ');
+  const tags=(f.work?'<span class="mc-tag mc-work">Tură</span>':'')+(f.exam?'<span class="mc-tag mc-exam">Examen</span>':'');
+  html+='<button type="button" class="'+classes+'"'+(inRange?' data-date="'+key+'" aria-label="'+day.getUTCDate()+' '+MONTHS[m]+' '+(f.work?'tură de muncă ':'')+(f.exam?'examen':'')+'"':' disabled')+'><span class="mc-num">'+day.getUTCDate()+'</span><span class="mc-tags">'+tags+'</span></button>';
+ }
+ $('mcGrid').innerHTML=html;
+}
+function render(){HR=mob.matches?60:44;$('G').style.setProperty('--hr',HR+'px');
 const A=items(wk),examSession=wtype(wk)=='ses';A.forEach(x=>{x.exam=!!S.exam[x.od+'|'+x.key];x.examTemplate=examSession&&!x.exam&&x.k!='Personal'});const vis=A.filter(x=>(x.k=='Personal'||!off(wk,x.d)||x.exam||x.examTemplate)&&(S.showC||x.k!='Curs'||x.exam)),ch=vis.filter(x=>!x.g&&!x.xc);
 const cols=mob.matches?[dy]:[0,1,2,3,4,5,6],gh=new Set(sel?vis.filter(x=>x.g&&x.c==sel).map(x=>x.d):[]);
 const RS=Math.min(8,Math.floor(Math.min(...A.map(x=>x.s)))),RE=Math.max(22,Math.ceil(Math.max(...A.map(x=>x.e)))),HH=(RE-RS)*HR;
@@ -242,12 +298,12 @@ const gr={};A.filter(x=>x.k=='Personal'&&!x.xc&&!x.mv).forEach(x=>(gr[x.pid]=gr[
 $('PL').innerHTML=Object.keys(gr).length?Object.values(gr).map(({x,d})=>'<div class="pi"><span><b>'+x.nm+'</b> · '+d.map(i=>D[i]).join(', ')+' · '+hm(x.s)+'–'+hm(x.e)+' · '+(x.rec?(x.mod?'modificat doar în această săptămână':'în fiecare săptămână'):'doar această săptămână')+'</span><button data-ed="'+x.pid+'">Editează</button></div>').join(''):'<div class="ok">Nimic adăugat în săptămâna aceasta.</div>';
 $('cw').disabled=S.scope=='wk'&&!ed;
 $('sc').textContent=ed?'Editezi un program personal. Se aplică: '+(ed.one?'doar în săptămâna lui':S.scope=='all'?'în fiecare săptămână (înlocuiește și modificările pe săptămâni)':'doar în săptămâna aceasta')+'.':'Adăugarea se aplică: '+(S.scope=='all'?'în fiecare săptămână (poți alege S1/S2 din listă)':'doar în săptămâna aceasta')+'.';
-$('ca').textContent=ed?'Salvează':'Adaugă';$('cdl').hidden=$('cx').hidden=!ed}
+$('ca').textContent=ed?'Salvează':'Adaugă';$('cdl').hidden=$('cx').hidden=!ed;renderMonth()}
 const flip=c=>setPick(c,1-pk(c,wk));
 $('cd').innerHTML=DS.map((d,i)=>'<label class="chip"><input type="checkbox" value="'+i+'"> '+d+'</label>').join('');
-const tm=v=>{const [h,m]=(v||'0:0').split(':').map(Number);return h+m/60},go=w=>{wk=Math.max(0,Math.min(NW-1,w));sel=null;render()};
-function clear(){ed=null;$('cm').textContent='';$('cn').value='Muncă';$('cs').value='10:00';$('ce').value='18:00';$('cw').value=0;$('cd').querySelectorAll('input').forEach(i=>i.checked=false)}
-$('ca').onclick=()=>{const days=[...$('cd').querySelectorAll('input:checked')].map(i=>+i.value),s=tm($('cs').value),e=tm($('ce').value),name=esc($('cn').value.trim()||'Program personal'),pa=+$('cw').value,o={name,days,s,e};
+const tm=v=>{const [h,m]=(v||'0:0').split(':').map(Number);return h+m/60},go=w=>{wk=Math.max(0,Math.min(NW-1,w));sel=null;if(calOpen)syncCalMonth();render()};
+function clear(){ed=null;$('cm').textContent='';$('cn').value='Muncă';$('ck').value='work';$('cs').value='10:00';$('ce').value='18:00';$('cw').value=0;$('cd').querySelectorAll('input').forEach(i=>i.checked=false)}
+$('ca').onclick=()=>{const days=[...$('cd').querySelectorAll('input:checked')].map(i=>+i.value),s=tm($('cs').value),e=tm($('ce').value),name=esc($('cn').value.trim()||'Program personal'),pa=+$('cw').value,o={name,kind:$('ck').value=='work'?'work':'personal',days,s,e};
 if(!days.length){$('cm').textContent='Alege cel puțin o zi.';return}if(!(e>s)){$('cm').textContent='Ora de final trebuie să fie după ora de început.';return}
 if(ed){if(ed.one)Object.assign(S.one.find(q=>q.id==ed.id),o);else{const q=S.ser.find(q=>q.id==ed.id);if(S.scope=='all'){Object.assign(q,o,{par:pa});q.ex={}}else q.ex[wkey(wk)]=o}}
 else if(S.scope=='all')S.ser.push(Object.assign({id:Date.now(),par:pa,ex:{}},o));else S.one.push(Object.assign({id:Date.now(),wk:wkey(wk)},o));
@@ -255,7 +311,7 @@ clear();save();render()};
 $('cdl').onclick=()=>{if(!ed)return;if(ed.one)S.one=S.one.filter(q=>q.id!=ed.id);else if(S.scope=='all')S.ser=S.ser.filter(q=>q.id!=ed.id);else S.ser.find(q=>q.id==ed.id).ex[wkey(wk)]={del:1};clear();save();render()};
 $('cx').onclick=()=>{clear();render()};
 function edit(id){const one=S.one.find(q=>q.id==id),q=one||S.ser.find(q=>q.id==id);if(!q)return;const z=one?q:(q.ex[wkey(wk)]||q);ed={id:q.id,one:!!one};
-$('cn').value=z.name.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');$('cs').value=hm(z.s).padStart(5,'0');$('ce').value=hm(z.e).padStart(5,'0');$('cw').value=q.par||0;
+$('cn').value=z.name.replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"');$('ck').value=z.kind||guessKind(z.name);$('cs').value=hm(z.s).padStart(5,'0');$('ce').value=hm(z.e).padStart(5,'0');$('cw').value=q.par||0;
 $('cd').querySelectorAll('input').forEach(i=>i.checked=z.days.includes(+i.value));render();if($('ft').scrollIntoView)$('ft').scrollIntoView({behavior:'smooth'})}
 $('PL').addEventListener('click',e=>{const b=e.target.closest('[data-ed]');if(b)edit(+b.dataset.ed)});
 const G=$('G');
@@ -288,23 +344,27 @@ closeSheet();save();render()};
 document.addEventListener('keydown',e=>{if(e.key=='Escape')closeSheet()});
 $('P').addEventListener('click',e=>{const b=e.target.closest('.opt');if(b)setPick(b.dataset.c,+b.dataset.i)});
 $('pv').onclick=()=>go(wk-1);$('nx').onclick=()=>go(wk+1);$('ws').onchange=e=>go(+e.target.value);
-$('td').onclick=()=>{toToday();sel=null;render()};document.addEventListener('visibilitychange',()=>{if(!document.hidden&&tIdx()!=lastD){lastD=tIdx();toToday();sel=null;render()}});$('dt').onclick=e=>{const b=e.target.closest('[data-d]');if(b){dy=+b.dataset.d;render()}};if(mob.addEventListener)mob.addEventListener('change',()=>render());
+$('mcToggle').onclick=()=>{calOpen=!calOpen;if(calOpen)syncCalMonth();renderMonth();if(calOpen)$('mc').scrollIntoView({behavior:'smooth',block:'start'})};
+$('mcPrev').onclick=()=>{calMonth=Math.max(MIN_MONTH,Date.UTC(new Date(calMonth).getUTCFullYear(),new Date(calMonth).getUTCMonth()-1,1));renderMonth()};
+$('mcNext').onclick=()=>{calMonth=Math.min(MAX_MONTH,Date.UTC(new Date(calMonth).getUTCFullYear(),new Date(calMonth).getUTCMonth()+1,1));renderMonth()};
+$('mcGrid').addEventListener('click',e=>{const b=e.target.closest('[data-date]');if(!b)return;const idx=Math.round((Date.parse(b.dataset.date+'T00:00:00Z')-B0)/DAY);if(idx<0||idx>=NW*7)return;wk=Math.floor(idx/7);dy=idx%7;syncCalMonth();sel=null;render();$('G').scrollIntoView({behavior:'smooth',block:'start'})});
+$('td').onclick=()=>{toToday();if(calOpen)syncCalMonth();sel=null;render()};document.addEventListener('visibilitychange',()=>{if(!document.hidden&&tIdx()!=lastD){lastD=tIdx();toToday();if(calOpen)syncCalMonth();sel=null;render()}});$('dt').onclick=e=>{const b=e.target.closest('[data-d]');if(b){dy=+b.dataset.d;if(calOpen)syncCalMonth();render()}};if(mob.addEventListener)mob.addEventListener('change',()=>render());
 $('s1').onclick=()=>{S.scope='wk';save();render()};$('s2').onclick=()=>{S.scope='all';save();render()};
 $('tc').onchange=e=>{S.showC=e.target.checked?1:0;save();render()};document.querySelectorAll('[data-sh]').forEach(b=>b.onclick=()=>{const [a,z]=b.dataset.sh.split('-');$('cs').value=a;$('ce').value=z;if($('cd').querySelectorAll('input:checked').length&&!ed)$('ca').click();else if(!ed)$('cm').textContent='Alege zilele, apoi tura (sau apasă Adaugă).'});
 const san=s=>String(s==null?'':s).slice(0,80).replace(/&(?!amp;|lt;|gt;|quot;)/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const num=(v,a,b,d)=>{v=+v;return isFinite(v)&&v>=a&&v<=b?v:d};
 const isK=k=>typeof k=='string'&&/^\d{4}-\d\d-\d\d$/.test(k);
 function clean(d){if(!d||typeof d!='object')throw new Error('format necunoscut');d=migrate(JSON.parse(JSON.stringify(d)));
-const o={v:5,dx:{},exam:{},par0:d.par0==2?2:1,struct:d.struct==0?0:1,showC:d.showC==0?0:1,base:{},wp:{},ser:[],one:[]};
+const o={v:6,dx:{},exam:{},par0:d.par0==2?2:1,struct:d.struct==0?0:1,showC:d.showC==0?0:1,base:{},wp:{},ser:[],one:[]};
 for(const c in L)o.base[c]=d.base&&d.base[c]==1?1:0;
 if(d.dx&&typeof d.dx=='object')for(const k in d.dx){const m=/^\d{4}-\d\d-\d\d\|[FLPO]:[\w:.-]{1,60}$/.test(k),e=d.dx[k];if(!m||!e||typeof e!='object')continue;
 if(e.del)o.dx[k]={del:1,u:num(e.u,0,9e15,0)};else if(isK(e.d)){const a=num(e.s,0,24,null),b=num(e.e,0,24,null);if(a!=null&&b!=null&&b>a)o.dx[k]={d:e.d,s:a,e:b,u:num(e.u,0,9e15,0)}}}
 if(d.exam&&typeof d.exam=='object')for(const k in d.exam)if(/^\d{4}-\d\d-\d\d\|[FL]:[\w:.-]{1,60}$/.test(k)&&d.exam[k])o.exam[k]={u:num(d.exam[k].u,0,9e15,0)};
 if(d.wp&&typeof d.wp=='object')for(const k in d.wp){if(!isK(k))continue;for(const c in L){const v=d.wp[k]&&d.wp[k][c];if(v===0||v===1)(o.wp[k]=o.wp[k]||{})[c]=v}}
-const itm=q=>{q=q||{};const s=num(q.s,0,24,null),e=num(q.e,0,24,null),dd=Array.isArray(q.days)?[...new Set(q.days.map(Number).filter(i=>Number.isInteger(i)&&i>=0&&i<7))]:[];return s==null||e==null||e<=s||!dd.length?null:{name:san(q.name||'Program personal'),days:dd,s,e}};
+const itm=q=>{q=q||{};const s=num(q.s,0,24,null),e=num(q.e,0,24,null),dd=Array.isArray(q.days)?[...new Set(q.days.map(Number).filter(i=>Number.isInteger(i)&&i>=0&&i<7))]:[],name=san(q.name||'Program personal'),kind=q.kind=='work'||q.kind=='personal'?q.kind:guessKind(name);return s==null||e==null||e<=s||!dd.length?null:{name,kind,days:dd,s,e}};
 (Array.isArray(d.ser)?d.ser:[]).slice(0,200).forEach((q,i)=>{const b=itm(q);if(!b)return;const ex={};if(q.ex&&typeof q.ex=='object')for(const k in q.ex){if(!isK(k))continue;const x=q.ex[k];if(x&&x.del)ex[k]={del:1};else{const y=itm(x);if(y)ex[k]=y}}o.ser.push(Object.assign({id:Math.floor(num(q.id,1,9e15,Date.now()+i)),par:Math.floor(num(q.par,0,2,0)),ex},b))});
 (Array.isArray(d.one)?d.one:[]).slice(0,500).forEach((q,i)=>{const b=itm(q),k=(q||{}).wk;if(!b||!isK(k))return;o.one.push(Object.assign({id:Math.floor(num(q.id,1,9e15,Date.now()+1000+i)),wk:k},b))});return o}
-async function doExport(){const data=JSON.stringify({app:'orar-1022',versiune:5,exportat:new Date().toISOString(),date:pack()},null,1),fn='orar-'+new Date().toISOString().slice(0,10)+'.json';
+async function doExport(){const data=JSON.stringify({app:'orar-1022',versiune:6,exportat:new Date().toISOString(),date:pack()},null,1),fn='orar-'+new Date().toISOString().slice(0,10)+'.json';
 try{if(typeof claude!=='undefined'){const dl=await claude.use('downloads');if(dl){await dl.save({filename:fn,data});$('xm').textContent='Export pornit.';return}}}catch(e){}
 try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download=fn;document.body.appendChild(a);a.click();a.remove();$('xm').textContent='Export pornit.'}catch(e){$('xm').textContent='Nu am putut exporta.'}}
 $('ex').onclick=doExport;
@@ -316,7 +376,7 @@ catch(err){ic.textContent='Fișier invalid: '+err.message}};
 $('sg').onchange=e=>{S.struct=e.target.checked?1:0;save();render()};$('p0').onchange=e=>{S.par0=+e.target.value;save();render()};
 $('rs').onclick=()=>{for(const c in L)S.base[c]=DEF[c]||0;S.wp={};sel=null;save();render()};
 const showLogin=()=>$('lg').classList.add('on'),hideLogin=()=>$('lg').classList.remove('on');
-const blank=()=>{S={v:5,dx:{},exam:{},par0:1,struct:1,showC:1,base:{},wp:{},ser:[],one:[],scope:'all'};for(const c in L)S.base[c]=DEF[c]||0};
+const blank=()=>{S={v:6,dx:{},exam:{},par0:1,struct:1,showC:1,base:{},wp:{},ser:[],one:[],scope:'all'};for(const c in L)S.base[c]=DEF[c]||0};
 async function pull(){if(!UID)return;try{const r=await SB.from(TBL).select('state,ts').eq('user_id',UID).maybeSingle();
 if(r.error){if(/does not exist|schema cache|relation/i.test(r.error.message||'')){SY('lipsește tabelul '+TBL+': rulează schema-v3.sql în Supabase');return}throw r.error}
 let d=r.data&&r.data.state,rt=r.data?+r.data.ts:0;const need=!r.data;
