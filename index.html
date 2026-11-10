@@ -20,6 +20,7 @@ button,select,input{font:inherit;color:inherit;background:var(--card);border:1px
 .b{position:absolute;box-sizing:border-box;border-radius:6px;padding:3px 4px;font-size:10.5px;line-height:1.25;overflow:hidden;background:hsl(var(--h) var(--s) var(--l));border-left:4px solid hsl(var(--h) 65% var(--bd))}
 .t-Curs{--h:210;opacity:.75}.t-Seminar{--h:130}.t-Laborator{--h:30}.t-Personal{--h:175;cursor:pointer}
 .lab{cursor:grab;box-shadow:0 0 0 1px hsl(var(--h) 65% var(--bd))}.x{outline:2px solid var(--bad)}
+.b.exam-template{opacity:.32;border-style:dashed;cursor:pointer}.b.exam{border:2px solid var(--bad);border-left-width:5px;box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--bad) 28%,transparent)}.b.exam .examt{display:inline-block;margin-top:2px;padding:1px 5px;border-radius:5px;background:var(--bad);color:#fff;font-size:9px;font-style:normal;font-weight:800;letter-spacing:.04em}
 .ghost{display:none;z-index:4!important;background:var(--card);border:2px dashed hsl(var(--h) 65% var(--bd));cursor:pointer}.ghost.ov{background:hsl(var(--h) var(--s) var(--l))}.ghost *{pointer-events:none}
 .row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}.nm{flex:0 0 220px;padding:6px 8px;border-radius:8px;font-weight:600;background:hsl(var(--h) var(--s) var(--l));display:flex;align-items:center}.opt{flex:1 1 200px;text-align:left;font-size:12px}
 .cf{color:var(--bad)}.ok{color:var(--mut)}.frm{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -184,13 +185,13 @@ const perOf=k=>PER.find(p=>k>=p[0]&&k<=p[1])||PER[PER.length-1],wtype=w=>perOf(w
 const TW=(()=>{let n=0;return[...Array(NW)].map((_,w)=>wtype(w)=='did'?++n:0)})(),NTW=Math.max(...TW);
 // Migrare v2 -> v3: săptămânile nu mai sunt indici relativi la 26.10, ci data de luni (ex. "2026-10-26")
 const wkOld=i=>iso(new Date(OLDB0+i*7*DAY));
-function migrate(o){if(!o||typeof o!='object')return o;if(o.v>=3){if(o.v<4){o.dx=o.dx||{};o.v=4}return o}const wp={};for(const w in o.wp||{})wp[/^\d+$/.test(w)?wkOld(+w):w]=o.wp[w];o.wp=wp;
+function migrate(o){if(!o||typeof o!='object')return o;if(!(o.v>=3)){const wp={};for(const w in o.wp||{})wp[/^\d+$/.test(w)?wkOld(+w):w]=o.wp[w];o.wp=wp;
 (o.ser||[]).forEach(q=>{const ex={};for(const w in q.ex||{})ex[/^\d+$/.test(w)?wkOld(+w):w]=q.ex[w];q.ex=ex});
-(o.one||[]).forEach(q=>{if(typeof q.wk=='number')q.wk=wkOld(q.wk)});o.dx={};o.v=4;return o}
-let S={v:4,dx:{},par0:1,struct:1,showC:1,base:{},wp:{},ser:[],one:[],scope:'all'},wk=0,sel=null,ed=null;
+(o.one||[]).forEach(q=>{if(typeof q.wk=='number')q.wk=wkOld(q.wk)});o.dx={};o.v=3}if(o.v<4){o.dx=o.dx||{};o.v=4}if(o.v<5){o.exam=o.exam||{};o.v=5}return o}
+let S={v:5,dx:{},exam:{},par0:1,struct:1,showC:1,base:{},wp:{},ser:[],one:[],scope:'all'},wk=0,sel=null,ed=null;
 try{const raw=localStorage.getItem('orar-v2'),j=JSON.parse(raw);if(j){if(j.v==3&&!localStorage.getItem('orar-backup-v3'))localStorage.setItem('orar-backup-v3',raw);if(!(j.v>=3)&&!localStorage.getItem('orar-backup-v2'))localStorage.setItem('orar-backup-v2',raw);S=Object.assign(S,migrate(j));if(!j.ts)S.ts=1}}catch(e){}
 for(const c in L)if(S.base[c]==null)S.base[c]=DEF[c]||0;
-let UID=null,SB=null,wt=null,wbusy=false,pt=null;const SY=x=>{$('sy').textContent=' · '+x},SK=['v','dx','par0','struct','showC','base','wp','ser','one','ts'];
+let UID=null,SB=null,wt=null,wbusy=false,pt=null;const SY=x=>{$('sy').textContent=' · '+x},SK=['v','dx','exam','par0','struct','showC','base','wp','ser','one','ts'];
 const pack=()=>{const o={};SK.forEach(k=>o[k]=S[k]);return JSON.parse(JSON.stringify(o))};
 const loc=()=>{try{localStorage.setItem('orar-v2',JSON.stringify(S))}catch(e){}};
 function push(){if(!UID)return;clearTimeout(wt);wt=setTimeout(async()=>{if(wbusy){push();return}wbusy=true;SY('se sincronizează…');
@@ -216,15 +217,15 @@ function setPick(c,i){if(S.scope=='all'){S.base[c]=i;for(const w in S.wp)delete 
 const mob=matchMedia('(max-width:720px)');const tIdx=()=>{const n=new Date();return Math.floor((Date.UTC(n.getFullYear(),n.getMonth(),n.getDate())-B0)/DAY)};
 let dy=0;const toToday=()=>{const i=tIdx();wk=Math.max(0,Math.min(NW-1,Math.floor(i/7)));dy=i>=0&&i<NW*7?i%7:(new Date().getDay()+6)%7};toToday();let lastD=tIdx();
 let HR=44;function render(){HR=mob.matches?60:44;$('G').style.setProperty('--hr',HR+'px');
-const A=items(wk),vis=A.filter(x=>(x.k=='Personal'||!off(wk,x.d))&&(S.showC||x.k!='Curs')),ch=vis.filter(x=>!x.g&&!x.xc);
+const A=items(wk),examSession=wtype(wk)=='ses';A.forEach(x=>{x.exam=!!S.exam[x.od+'|'+x.key];x.examTemplate=examSession&&!x.exam&&x.k!='Personal'});const vis=A.filter(x=>(x.k=='Personal'||!off(wk,x.d)||x.exam||x.examTemplate)&&(S.showC||x.k!='Curs'||x.exam)),ch=vis.filter(x=>!x.g&&!x.xc);
 const cols=mob.matches?[dy]:[0,1,2,3,4,5,6],gh=new Set(sel?vis.filter(x=>x.g&&x.c==sel).map(x=>x.d):[]);
 const RS=Math.min(8,Math.floor(Math.min(...A.map(x=>x.s)))),RE=Math.max(22,Math.ceil(Math.max(...A.map(x=>x.e)))),HH=(RE-RS)*HR;
 let h='<div class="hd"></div>'+cols.map(i=>'<div class="hd'+(wk*7+i==tIdx()?' td':'')+'">'+D[i]+'<small>'+fd(dt(wk,i))+'</small></div>').join('')+'<div class="tc" style="height:'+HH+'px">'+[...Array(RE-RS)].map((_,i)=>'<span style="top:'+(i*HR+2)+'px">'+(RS+i)+':00</span>').join('')+'</div>';
-for(const d of cols){const o=off(wk,d);h+='<div class="dc'+(o?' off':'')+(wtype(wk)!='did'?' p-'+wtype(wk):'')+(wk*7+d==tIdx()?' td':'')+'" style="height:'+HH+'px">'+(o?'<div class="ot">'+o+'</div>':'');
+for(const d of cols){const o=off(wk,d);h+='<div class="dc'+(o?' off':'')+(wtype(wk)!='did'?' p-'+wtype(wk):'')+(wk*7+d==tIdx()?' td':'')+'" style="height:'+HH+'px">'+(o?'<div class="ot">'+(examSession?'Sesiune · selectează o activitate pentru examen':o)+'</div>':'');
 vis.filter(x=>x.d==d).forEach(x=>{let n=1,i=0,cf=0;
 if(!x.g&&!x.xc){cf=ch.some(y=>clash(x,y));const g=ch.filter(y=>y.d==d&&(y===x||ovl(x,y)));n=g.length;i=g.indexOf(x)}
 const pr=x.k=='Personal',tip=nm(x)+' · '+x.k+' · '+D[d]+' '+fd(dt(wk,d))+' · '+hm(x.s)+'–'+hm(x.e)+(pr?'':' · '+x.t+' · '+x.r);
-h+='<div class="b t-'+x.k+(x.lab&&!x.g&&!x.xc?' lab':'')+(x.g?' ghost':'')+(cf?' x':'')+(x.xc?' xc':'')+(x.mv?' mv':'')+'"'+(x.lab?' data-c="'+x.c+'"':'')+(x.g?'':' data-x="'+x.od+'|'+x.key+'"')+(x.lab&&!x.g&&!x.xc?' draggable="true"':'')+' title="'+tip+'" style="top:'+((x.s-RS)*HR+1)+'px;height:'+((x.e-x.s)*HR-2)+'px;left:calc('+100*i/n+'% + 1px);width:calc('+100/n+'% - 2px);z-index:'+(pr?3:x.lab?2:1)+(x.g&&sel==x.c?';display:block':'')+'">'+(pr?'':'<em class="tm">'+hm(x.s)+'–'+hm(x.e)+'</em>')+'<b>'+(x.xc?(x.mvto?'mutat · ':'anulat · '):'')+nm(x)+(x.mod||x.mv?' ✎':'')+'</b><br>'+(pr?hm(x.s)+'–'+hm(x.e):(x.g?'← '+(x.i?'1022/1':'1022/2')+' · lasă aici<br>':'')+x.k+' · '+x.r+'<br>'+x.t)+'</div>'});
+h+='<div class="b t-'+x.k+(x.lab&&!x.g&&!x.xc?' lab':'')+(x.g?' ghost':'')+(cf?' x':'')+(x.xc?' xc':'')+(x.mv?' mv':'')+(x.examTemplate?' exam-template':'')+(x.exam?' exam':'')+'"'+(x.lab?' data-c="'+x.c+'"':'')+(x.g?'':' data-x="'+x.od+'|'+x.key+'"')+(x.lab&&!x.g&&!x.xc?' draggable="true"':'')+' title="'+tip+'" style="top:'+((x.s-RS)*HR+1)+'px;height:'+((x.e-x.s)*HR-2)+'px;left:calc('+100*i/n+'% + 1px);width:calc('+100/n+'% - 2px);z-index:'+(pr?3:x.lab?2:1)+(x.g&&sel==x.c?';display:block':'')+'">'+(pr?'':'<em class="tm">'+hm(x.s)+'–'+hm(x.e)+'</em>')+'<b>'+(x.xc?(x.mvto?'mutat · ':'anulat · '):'')+nm(x)+(x.mod||x.mv?' ✎':'')+'</b><br>'+(x.exam?'<i class="examt">EXAMEN</i><br>':'')+(pr?hm(x.s)+'–'+hm(x.e):(x.g?'← '+(x.i?'1022/1':'1022/2')+' · lasă aici<br>':'')+x.k+' · '+x.r+'<br>'+x.t)+'</div>'});
 h+='</div>'}
 $('G').innerHTML=h;$('G').style.gridTemplateColumns='46px repeat('+cols.length+',minmax('+(cols.length>1?'128px':'0')+',1fr))';$('G').style.minWidth=cols.length>1?'940px':'0';
 $('dt').innerHTML=DS.map((d,i)=>'<button class="'+(i==dy?'act':'')+(wk*7+i==tIdx()?' td':'')+'" data-d="'+i+'">'+d+'<br><small>'+fd(dt(wk,i))+(gh.has(i)?' ⇄':'')+'</small></button>').join('');
@@ -265,17 +266,19 @@ G.addEventListener('drop',e=>{const g=e.target.closest('.ghost');if(g&&g.dataset
 G.addEventListener('dragend',()=>{sel=null;render()});
 G.addEventListener('click',e=>{const b=e.target.closest('.b');if(!b)return;if(b.classList.contains('ghost')){flip(b.dataset.c);return}if(b.dataset.x)openSheet(b.dataset.x)});
 let SHK=null,SHX=null;const closeSheet=()=>{$('sh').hidden=true},dn=q=>D[(new Date(q).getUTCDay()+6)%7];
-function openSheet(k){const x=items(wk).find(y=>!y.g&&y.od+'|'+y.key==k);if(!x)return;SHK=k;SHX=x;const e=S.dx[k],pr=x.k=='Personal';
+function openSheet(k){const x=items(wk).find(y=>!y.g&&y.od+'|'+y.key==k);if(!x)return;SHK=k;SHX=x;const e=S.dx[k],pr=x.k=='Personal',template=wtype(wk)=='ses';
 $('sht').innerHTML=nm(x);$('shi').textContent=D[x.d]+' '+fd(dt(wk,x.d))+' · '+hm(x.s)+'–'+hm(x.e)+(pr?'':' · '+x.k+' · '+x.r);
 let b='';if(e)b+='<div class="chg">'+(e.del?'Anulat doar pe această dată.':'Mutat doar pe această dată: '+dn(e.d)+' '+fd(new Date(e.d))+', '+hm(e.s)+'–'+hm(e.e)+'.')+'</div>';
 b+='<div class="acts">';
 if(e)b+='<button class="pri" data-a="rv">Revino la programul normal</button>';
-else b+='<button class="dng" data-a="cx">Anulează doar pe '+fd(dt(wk,x.d))+'</button><div class="mvf"><select id="shd">'+D.map((n,i)=>'<option value="'+dkey(wk,i)+'"'+(i==x.d?' selected':'')+'>'+n+' '+fd(dt(wk,i))+'</option>').join('')+'</select><input type="time" id="shs" value="'+hm(x.s).padStart(5,'0')+'"><input type="time" id="she" value="'+hm(x.e).padStart(5,'0')+'"></div><button data-a="mv">Mută doar pe data asta</button>';
+else if(!template)b+='<button class="dng" data-a="cx">Anulează doar pe '+fd(dt(wk,x.d))+'</button><div class="mvf"><select id="shd">'+D.map((n,i)=>'<option value="'+dkey(wk,i)+'"'+(i==x.d?' selected':'')+'>'+n+' '+fd(dt(wk,i))+'</option>').join('')+'</select><input type="time" id="shs" value="'+hm(x.s).padStart(5,'0')+'"><input type="time" id="she" value="'+hm(x.e).padStart(5,'0')+'"></div><button data-a="mv">Mută doar pe data asta</button>';
 if(x.lab)b+='<button data-a="sw">Schimbă grupa de laborator ('+(S.scope=='all'?'în fiecare săpt.':'doar săpt. asta')+')</button>';
+if(!pr&&!x.g&&!x.xc)b+='<button data-a="exam" class="'+(S.exam[k]?'dng':'pri')+'">'+(S.exam[k]?'Elimină marcajul de examen':'Marchează ca examen pe data asta')+'</button>';
 if(pr)b+='<button data-a="ed">Editează programul</button>';
 $('shb').innerHTML=b+'<button data-a="cl">Închide</button></div><div class="cf" id="shm"></div>';$('sh').hidden=false}
 $('sh').onclick=e=>{if(e.target.id=='sh'){closeSheet();return}const a=e.target.closest('[data-a]');if(!a||!SHK)return;const k=SHK,x=SHX,t=a.dataset.a;
 if(t=='cl'){closeSheet();return}
+if(t=='exam'){if(S.exam[k])delete S.exam[k];else S.exam[k]={u:Date.now()};closeSheet();save();render();return}
 if(t=='sw'){closeSheet();flip(x.c);return}
 if(t=='ed'){closeSheet();edit(x.pid);return}
 if(t=='rv')delete S.dx[k];
@@ -292,15 +295,16 @@ const san=s=>String(s==null?'':s).slice(0,80).replace(/&(?!amp;|lt;|gt;|quot;)/g
 const num=(v,a,b,d)=>{v=+v;return isFinite(v)&&v>=a&&v<=b?v:d};
 const isK=k=>typeof k=='string'&&/^\d{4}-\d\d-\d\d$/.test(k);
 function clean(d){if(!d||typeof d!='object')throw new Error('format necunoscut');d=migrate(JSON.parse(JSON.stringify(d)));
-const o={v:4,dx:{},par0:d.par0==2?2:1,struct:d.struct==0?0:1,showC:d.showC==0?0:1,base:{},wp:{},ser:[],one:[]};
+const o={v:5,dx:{},exam:{},par0:d.par0==2?2:1,struct:d.struct==0?0:1,showC:d.showC==0?0:1,base:{},wp:{},ser:[],one:[]};
 for(const c in L)o.base[c]=d.base&&d.base[c]==1?1:0;
 if(d.dx&&typeof d.dx=='object')for(const k in d.dx){const m=/^\d{4}-\d\d-\d\d\|[FLPO]:[\w:.-]{1,60}$/.test(k),e=d.dx[k];if(!m||!e||typeof e!='object')continue;
 if(e.del)o.dx[k]={del:1,u:num(e.u,0,9e15,0)};else if(isK(e.d)){const a=num(e.s,0,24,null),b=num(e.e,0,24,null);if(a!=null&&b!=null&&b>a)o.dx[k]={d:e.d,s:a,e:b,u:num(e.u,0,9e15,0)}}}
+if(d.exam&&typeof d.exam=='object')for(const k in d.exam)if(/^\d{4}-\d\d-\d\d\|[FL]:[\w:.-]{1,60}$/.test(k)&&d.exam[k])o.exam[k]={u:num(d.exam[k].u,0,9e15,0)};
 if(d.wp&&typeof d.wp=='object')for(const k in d.wp){if(!isK(k))continue;for(const c in L){const v=d.wp[k]&&d.wp[k][c];if(v===0||v===1)(o.wp[k]=o.wp[k]||{})[c]=v}}
 const itm=q=>{q=q||{};const s=num(q.s,0,24,null),e=num(q.e,0,24,null),dd=Array.isArray(q.days)?[...new Set(q.days.map(Number).filter(i=>Number.isInteger(i)&&i>=0&&i<7))]:[];return s==null||e==null||e<=s||!dd.length?null:{name:san(q.name||'Program personal'),days:dd,s,e}};
 (Array.isArray(d.ser)?d.ser:[]).slice(0,200).forEach((q,i)=>{const b=itm(q);if(!b)return;const ex={};if(q.ex&&typeof q.ex=='object')for(const k in q.ex){if(!isK(k))continue;const x=q.ex[k];if(x&&x.del)ex[k]={del:1};else{const y=itm(x);if(y)ex[k]=y}}o.ser.push(Object.assign({id:Math.floor(num(q.id,1,9e15,Date.now()+i)),par:Math.floor(num(q.par,0,2,0)),ex},b))});
 (Array.isArray(d.one)?d.one:[]).slice(0,500).forEach((q,i)=>{const b=itm(q),k=(q||{}).wk;if(!b||!isK(k))return;o.one.push(Object.assign({id:Math.floor(num(q.id,1,9e15,Date.now()+1000+i)),wk:k},b))});return o}
-async function doExport(){const data=JSON.stringify({app:'orar-1022',versiune:4,exportat:new Date().toISOString(),date:pack()},null,1),fn='orar-'+new Date().toISOString().slice(0,10)+'.json';
+async function doExport(){const data=JSON.stringify({app:'orar-1022',versiune:5,exportat:new Date().toISOString(),date:pack()},null,1),fn='orar-'+new Date().toISOString().slice(0,10)+'.json';
 try{if(typeof claude!=='undefined'){const dl=await claude.use('downloads');if(dl){await dl.save({filename:fn,data});$('xm').textContent='Export pornit.';return}}}catch(e){}
 try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download=fn;document.body.appendChild(a);a.click();a.remove();$('xm').textContent='Export pornit.'}catch(e){$('xm').textContent='Nu am putut exporta.'}}
 $('ex').onclick=doExport;
@@ -312,7 +316,7 @@ catch(err){ic.textContent='Fișier invalid: '+err.message}};
 $('sg').onchange=e=>{S.struct=e.target.checked?1:0;save();render()};$('p0').onchange=e=>{S.par0=+e.target.value;save();render()};
 $('rs').onclick=()=>{for(const c in L)S.base[c]=DEF[c]||0;S.wp={};sel=null;save();render()};
 const showLogin=()=>$('lg').classList.add('on'),hideLogin=()=>$('lg').classList.remove('on');
-const blank=()=>{S={v:4,dx:{},par0:1,struct:1,showC:1,base:{},wp:{},ser:[],one:[],scope:'all'};for(const c in L)S.base[c]=DEF[c]||0};
+const blank=()=>{S={v:5,dx:{},exam:{},par0:1,struct:1,showC:1,base:{},wp:{},ser:[],one:[],scope:'all'};for(const c in L)S.base[c]=DEF[c]||0};
 async function pull(){if(!UID)return;try{const r=await SB.from(TBL).select('state,ts').eq('user_id',UID).maybeSingle();
 if(r.error){if(/does not exist|schema cache|relation/i.test(r.error.message||'')){SY('lipsește tabelul '+TBL+': rulează schema-v3.sql în Supabase');return}throw r.error}
 let d=r.data&&r.data.state,rt=r.data?+r.data.ts:0;const need=!r.data;
