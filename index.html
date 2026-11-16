@@ -220,6 +220,8 @@ body.fs-mode .tm{display:block;font-size:10px;margin-bottom:2px}
 .cnm{flex:0 0 220px;padding:6px 8px;border-radius:8px;font-weight:600;background:var(--ln)}
 .cnm.set{background:hsl(var(--h) var(--s) var(--l))}
 @media(max-width:720px){#cc{grid-column:1/-1}.cnm{flex:1 1 100%}#CL{margin:0 12px}.cr{padding:10px;background:var(--card);border-radius:14px}.sw{width:34px;height:34px}}
+details.cd2{margin:18px 0 8px}details.cd2>summary{cursor:pointer;font-size:15px;font-weight:600;padding:6px 0}details.cd2[open]>summary{margin-bottom:8px}
+@media(max-width:720px){details.cd2{margin:28px 12px 10px}details.cd2>summary{font-size:13px;color:var(--mut)}#CL{margin:0}}
 </style></head><body><div id="lg"><form id="lf"><h2>Orarul meu</h2><input id="lu" type="email" placeholder="Email" autocomplete="username" autocapitalize="none"><input id="lp" type="password" placeholder="Parolă (min. 6 caractere)" autocomplete="current-password"><div class="cf" id="le"></div><button type="submit" id="lb" class="act">Autentificare</button><button type="button" id="rb">Creează cont</button><button type="button" id="sk">Continuă fără cont (doar pe acest dispozitiv)</button></form></div><div class="w">
 <h1>Planificator orar pe săptămâni</h1>
 <p class="sub">Grupa 1022/2 ↔ 1022/1 · semestrul I, 28.09.2026 – 21.02.2027. Alege săptămâna, apoi alege dacă o modificare (schimb de laborator sau program personal) se aplică doar în ea sau în fiecare săptămână.</p>
@@ -230,7 +232,7 @@ body.fs-mode .tm{display:block;font-size:10px;margin-bottom:2px}
 <div class="gw"><div class="g" id="G"></div></div><p class="note" id="gridHint">Apasă pe un interval liber din orar pentru a adăuga rapid o activitate. Ziua și ora vor fi completate automat.</p>
 <h2>Suprapuneri în săptămâna aceasta</h2><div id="cf"></div>
 <h2>Laboratoarele și engleza ta (apasă ca să alegi)</h2><div id="P"></div><div class="bar"><button id="rs">Resetează laboratoarele</button></div>
-<h2>Culorile materiilor</h2><div id="CL"></div><h2 id="ft">Programul meu (muncă etc.)</h2>
+<details class="cd2"><summary>Culorile materiilor (opțional)</summary><div id="CL"></div></details><h2 id="ft">Programul meu (muncă etc.)</h2>
 <div class="bar shf"><span class="st">Ture frecvente (alege zilele, apoi tura):</span><button data-sh="15:30-22:00">15:30–22:00</button><button data-sh="09:00-18:00">09:00–18:00</button><button data-sh="09:00-15:30">09:00–15:30</button><button data-sh="13:00-22:00">13:00–22:00</button></div>
 <div class="frm" id="activityForm"><input id="cn" value="Muncă" size="12" aria-label="Nume"><label id="ckWrap">Tipul activității <select id="ck"><option value="work">Tură de muncă</option><option value="personal">Activitate personală</option></select></label><span id="cc" class="swr"></span><span id="cd" style="display:flex;gap:4px;flex-wrap:wrap"></span><label>De la <input type="time" id="cs" value="10:00"></label><label>Până la <input type="time" id="ce" value="18:00"></label><select id="cw" title="Doar pentru programul recurent"><option value="0">Toate săptămânile (S1+S2)</option><option value="1">Doar S1</option><option value="2">Doar S2</option></select><button id="ca">Adaugă</button><button id="cdl" hidden>Șterge</button><button id="cx" hidden>Anulează</button><span class="cf" id="cm"></span></div>
 <div class="st" id="sc" style="margin-top:6px"></div><div id="PL" style="margin-top:8px"></div>
